@@ -5,3 +5,4 @@ pub mod input_handler;
 pub mod app;
 
 pub use terminal_guard::TerminalGuard;
+pub use app::run;
