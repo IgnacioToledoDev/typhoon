@@ -50,3 +50,38 @@ fn missing_directory_returns_directory_not_found() {
     assert!(matches!(err, CorpusError::DirectoryNotFound(_)));
     fs::remove_dir_all(root).ok();
 }
+
+#[test]
+fn oversized_files_are_skipped() {
+    let root = temp_root();
+    let rust_dir = root.join("rust");
+    fs::create_dir_all(&rust_dir).unwrap();
+    fs::write(rust_dir.join("small.rs"), "fn a() {}").unwrap();
+    // 64 KiB is the cap inside FsCorpusRepository — anything strictly larger is skipped.
+    let oversized = "x".repeat(64 * 1024 + 1);
+    fs::write(rust_dir.join("huge.rs"), &oversized).unwrap();
+
+    let repo = FsCorpusRepository::new(root.clone());
+    let snippets = repo.list(Language::Rust).unwrap();
+
+    let names: Vec<String> = snippets
+        .iter()
+        .map(|s| s.source_path().file_name().unwrap().to_string_lossy().into_owned())
+        .collect();
+    assert_eq!(names, vec!["small.rs".to_string()]);
+
+    fs::remove_dir_all(root).ok();
+}
+
+#[test]
+fn empty_directory_returns_empty_list() {
+    let root = temp_root();
+    let go_dir = root.join("go");
+    fs::create_dir_all(&go_dir).unwrap();
+
+    let repo = FsCorpusRepository::new(root.clone());
+    let snippets = repo.list(Language::Go).unwrap();
+    assert!(snippets.is_empty());
+
+    fs::remove_dir_all(root).ok();
+}
