@@ -1,0 +1,1 @@
+// Stateless domain-adjacent calculators.
