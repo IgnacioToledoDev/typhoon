@@ -2,6 +2,7 @@ use std::time::{Duration, Instant};
 use crate::core::domain::{Snippet, Keystroke, KeystrokeOutcome, Stats};
 use crate::core::domain::services::{gross_wpm, net_wpm, accuracy};
 
+#[derive(Debug)]
 pub struct TypingSession {
     snippet: Snippet,
     typed: String,
