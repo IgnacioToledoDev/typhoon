@@ -17,7 +17,7 @@ pub fn draw(
         let chunks = Layout::default()
             .direction(Direction::Vertical)
             .constraints([
-                Constraint::Percentage(30),
+                Constraint::Percentage(15),
                 Constraint::Min(0),
                 Constraint::Length(1),
             ])
